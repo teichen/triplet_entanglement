@@ -1,86 +1,93 @@
-#!/usr/bin/python
-
-import math
-import numpy
+from math import pi
+import numpy as np
 
 from entangle import slater
 from hv import energy_v
 from htb import energy_tb
 
+n = 101 # size of the lattice
+
+# governing interaction strength is r = chi / jt,
+# where chi is the triplet-triplet biexciton interaction and
+# jt is the triplet-triplet resonance integral
+
 nr = 20
+dr = 2.0 / (nr-1) # input triplet separation resolution
+r = np.zeros(nr)
 
-dr = float(2.0/(nr-1))
+for idx in range(nr):
+    r[idx] = idx * dr
 
-# r = chi/jt
-chi = float(0.0)
-r = [float(0.0) for i in range(nr)]
+# configurable triplet-triplet resonance integral and the
+# energy gap between two-triplet state and the ground state singlet
 
-for i in range(nr):
-    r[i] = float(i*dr)
+jt = 2.5
+gap = jt
 
-jt = float(2.5)
-
-gap = float(jt)
-#gap = float(4*jt)
-#gap = float(7*jt)
+# the ground state singlet sets the zero
 
 es0 = 0
-et = -0.5*(gap - es0 - 4*jt)
+et = -0.5 * (gap - es0 - 4 * jt)
 
-n = 101
+# calculate a Slater rank, S, for proximal states nearly resonant with singlet
+proximal_points = 10
 
-#calc. S for nearS_pts states nearly resonant with singlet
-nearS_pts = 10
+qvec = np.zeros(int((n-1) / 2)) # relative two-triplet momentum
 
-qvec = [int(0) for i in range(1,n-1,2)]
-for i in range(1,n-1,2):
-    qvec[(i-1)/2] = i
-thq = numpy.multiply(float(2.0*math.pi/n),qvec)
+for idq in range(1, n-1, 2):
+    qvec[int((idq-1) / 2)] = idq
 
-#calculate entanglement
+thq = 2.0 * pi / n * qvec
 
-slat = [int(0) for j in range(nr*nearS_pts)]
-slat = numpy.reshape(slat,(nr,nearS_pts))
+# calculate entanglement
 
-e_tb = energy_tb(et,jt,thq,n)
+slat = np.zeros((nr, proximal_points))
 
-h_tb = numpy.eye(len(thq))
-for j in range(len(thq)):
-    h_tb[j][j] = e_tb[j]
+# calculate the tight-binding energy for increasing relative two-triplet momentum
+e_tb = energy_tb(et, jt, thq, n)
+
+h_tb = np.eye(len(thq))
+for idq in range(len(thq)):
+    h_tb[idq][idq] = e_tb[idq]
  
-for i in range(nr):
+for idx in range(nr):
 
-    chi = jt*r[i]
-    e_v = energy_v(chi,thq,n)
-    h_v = numpy.reshape(e_v,(len(thq),len(thq)))
+    chi = jt * r[idx]
+    e_v = energy_v(chi, thq, n)
+    h_v = np.reshape(e_v, (len(thq), len(thq)))
 
-    energies, u = numpy.linalg.eig(h_tb + h_v)
+    # calculate the energies and unitary transformation
+    energies, u = np.linalg.eig(h_tb + h_v)
 
-    ut = numpy.conjugate(numpy.transpose(u))
+    ut = np.conjugate(np.transpose(u))
 
-    ind = 0
-    etmp = 1.0e6
-    for j in range(len(thq)):
-        if etmp>abs(energies[j]):
-            ind = j
-            etmp = abs(energies[j])
+    idx_nearest = 0 # index nearest the singlet
+    e_upper_bound = 1.0e6 # energy which bounds the singlet energy
+
+    for idq in range(len(thq)):
+        if e_upper_bound > abs(energies[idq]):
+            idx_nearest = idq
+            e_upper_bound = abs(energies[idq])
 
     # points nearly resonant with singlet
-    inds = [int(0) for j in range(nearS_pts)]
-    for j in range(nearS_pts):
-        inds[j] = ind-(nearS_pts/2)+j
+    idx_proximal = np.zeros(proximal_points, dtype=int)
+    
+    for idq in range(proximal_points):
+        idx_proximal[idq] = idx_nearest - int(proximal_points / 2) + idq
 
-    slat[i][:] = slater(u[:][inds],n,thq)
+    slat[idx, :] = slater(u[:, idx_proximal],n,thq)
 
 y = slat
-ymax = int((n-1)/2)
+ymax = int((n-1) / 2)
 y = y - 1
 ymax = ymax - 1
 
-for i in range(nr):
-    # average over all nearS_pts calculated
-    ymean[i] = float(numpy.mean(y[i][:])/ymax)
+ymean = np.zeros(nr)
 
-for i in range(nr):
-    print("%f\t%f" % (r[i],ymean[i]))
+for idx in range(nr):
+    # average over all proximal_points calculated
+    ymean[idx] = float(np.mean(y[idx, :]) / ymax)
+
+for idx in range(nr):
+    print("%f\t%f" % (r[idx], ymean[idx]))
 

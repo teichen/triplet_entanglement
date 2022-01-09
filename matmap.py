@@ -60,30 +60,31 @@ def tridiag(A):
     
         #Find a Householder vector to eliminate the i-th column
 
-        Tvec = T[(i+1):n][i]
+        Tvec = T[(i+1):n, i]
         (v, tau, alpha) = qr_householder(Tvec)
 
-        T[i+1][i] = alpha
-        T[i][i+1] = -alpha
+        T[i+1, i] = alpha
+        T[i, i+1] = -alpha
 
         j = 2
         while i+j<n:
-            T[i+j][i] = 0
-            T[i][i+j] = 0
+            T[i+j, i] = 0
+            T[i, i+j] = 0
             j = j+1
 
         #Note: tau = 0 means the transformation is the identity
 
         if tau != 0.0:
             #Update the matrix block
-            w = tau*numpy.matmul(T[(i+1):n][(i+1):n],numpy.conjugate(v))
-            T[(i+1):n][(i+1):n] = T[(i+1):n][(i+1):n] + numpy.outer(v,w) - numpy.outer(w,v)
+            w = tau*numpy.matmul(T[(i+1):n, (i+1):n],numpy.conjugate(v))
+
+            T[(i+1):n, (i+1):n] = T[(i+1):n, (i+1):n] + numpy.outer(v,w) - numpy.outer(w,v)
 
             #Accumulate the individual Householder reflections
             #Accumulate them in the form P_1*P_2*..., which is
             #(..*P_2*P_1)^dagger
-            y = tau*numpy.matmul(Q[:][(i+1):n],v)
-            Q[:][(i+1):n] = Q[:][(i+1):n] - numpy.outer(y,v)
+            y = tau*numpy.matmul(Q[:, (i+1):n],v)
+            Q[:, (i+1):n] = Q[:, (i+1):n] - numpy.outer(y,v)
 
     return (T, Q)
 
