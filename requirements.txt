@@ -1,0 +1,2 @@
+# LIBRARIES NECESSARY
+numpy == 1.16.2
