@@ -1,15 +1,15 @@
-.PHONY: pip-install-dev clean test-dev
+.PHONY: pip-install clean test
 
 help:
-	@echo "pip-install-dev - Install the Python dependencies for the software"
+	@echo "pip-install - Install the Python dependencies for the software"
 	@echo "clean - clean out the code"
-	@echo "test-dev - master testing for the software"
+	@echo "test - master testing for the software"
 
-pip-install-dev:
+pip-install:
 	pip install -r requirements.txt
 
 clean:
 	rm -fr build/
 
-test-dev:
-	pytest unit_tests/
+test:
+	cd unit_tests && pytest entangle_test.py
