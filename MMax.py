@@ -6,7 +6,12 @@ from hv import energy_v
 from htb import energy_tb
 
 def MMax(r, n):
-    """ TODO
+    """ calculate a quantum entanglement between two triplet excitations born out of
+        singlet fission through a Slater rank for two-triplet points nearly resonant with
+        the initial singlet excitation
+
+        the governing two-triplet interaction strength, chi, is constrained by r = chi / jt,
+        where chi is the triplet-triplet biexciton interaction
 
     Args:
         r (double): two-triplet separation
@@ -14,18 +19,10 @@ def MMax(r, n):
 
     Returns: ymean
     """
-    # governing interaction strength is r = chi / jt,
-    # where chi is the triplet-triplet biexciton interaction and
-    # jt is the triplet-triplet resonance integral
+    jt = 2.5 # triplet-triplet resonance integral
+    gap = jt # energy gap between two-triplet state and the ground state singlet
 
-    # configurable triplet-triplet resonance integral and the
-    # energy gap between two-triplet state and the ground state singlet
-    jt = 2.5
-    gap = jt
-
-    # the ground state singlet sets the zero
-
-    es0 = 0
+    es0 = 0 # the ground state singlet sets the zero
     et = -0.5 * (gap - es0 - 4 * jt)
 
     # calculate a Slater rank, S, for proximal states nearly resonant with singlet
@@ -40,7 +37,6 @@ def MMax(r, n):
 
     # calculate entanglement
     nr = len(r)
-
     slat = np.zeros((nr, proximal_points))
 
     # calculate the tight-binding energy for increasing relative two-triplet momentum
@@ -61,7 +57,7 @@ def MMax(r, n):
 
         ut = np.conjugate(np.transpose(u))
 
-        idx_nearest = 0 # index nearest the singlet
+        idx_nearest   = 0 # index nearest the singlet
         e_upper_bound = 1.0e6 # energy which bounds the singlet energy
 
         for idq in range(len(thq)):
@@ -77,9 +73,9 @@ def MMax(r, n):
 
         slat[idx, :] = slater(u[:, idx_proximal],n,thq)
 
-    y = slat
+    y    = slat
     ymax = int((n-1) / 2)
-    y = y - 1
+    y    = y - 1
     ymax = ymax - 1
 
     ymean = np.zeros(nr)

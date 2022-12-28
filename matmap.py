@@ -4,11 +4,12 @@ import math
 import numpy
 
 def qr_householder(A):
-
-    #returns V and tau such that H*A = alpha*e1
-    #In this expression, e1 is the first column of eye(m), 
-    #abs(alpha) = norm(A), and 
-    #H = eye(m) - tau*V*V' is a Householder matrix.
+    """
+    returns V and tau such that H*A = alpha*e1
+    In this expression, e1 is the first column of eye(m), 
+    abs(alpha) = norm(A), and 
+    H = eye(m) - tau*V*V' is a Householder matrix.
+    """
 
     m = len(A)
     #n = len(A[0])
