@@ -1,10 +1,17 @@
 from math import sqrt, sin
-import numpy
+import numpy as np
 
 from matmap import tridiag
 
 def slater(u, n, thq):
     """ slater rank
+
+    Args:
+        u (np.array): unitary transition matrix
+        n (int): size of the lattice
+        thq (double): two triplet relative lattice momentum
+
+    Returns: slater_number (np.array) array of slater ranks
     """
 
     nq = len(u)
@@ -15,7 +22,7 @@ def slater(u, n, thq):
     for i in range(proximal_points):
 
         dmat = [0.0 for j in range(n*n)]
-        dmat = numpy.reshape(dmat,(n,n))
+        dmat = np.reshape(dmat,(n,n))
 
         for j in range(1,n):
             for k in range(j+1,n+1):
@@ -28,14 +35,14 @@ def slater(u, n, thq):
                 dmat[k-1, j-1] = -dmat[j-1, k-1]
 
         # now for indistinguishable fermions
-        dmat = 0.5 * dmat / sqrt(numpy.trace(numpy.matmul(numpy.transpose(dmat), dmat))) # normalization
+        dmat = 0.5 * dmat / sqrt(np.trace(np.matmul(np.transpose(dmat), dmat))) # normalization
 
         # W. Wimmer
         # Algorithm 923: Efficient Numerical Computation of the Pfaffian 
         # for Dense and Banded Skew-Symmetric Matrices
 
         (dtilde, U) = tridiag(dmat)
-        z = numpy.array(numpy.diagonal(dtilde, 1))
+        z = np.array(np.diagonal(dtilde, 1))
 
         for j in range(nq, n-1):
             z[j] = 0.0
@@ -56,7 +63,7 @@ def slater(u, n, thq):
 
         slater_number[i] = stmp
 
-        zoff = numpy.diagonal(dtilde, 2)
+        zoff = np.diagonal(dtilde, 2)
 
         z_null = 0
         for j in range(0, n-2):

@@ -17,7 +17,8 @@ def MMax(r, n):
         r (double): two-triplet separation
         n (int): size of the lattice
 
-    Returns: ymean
+    Returns: ymean (np.array) mean Slater rank for triplet pairs nearly resonant 
+             with initial singlet
     """
     jt = 2.5 # triplet-triplet resonance integral
     gap = jt # energy gap between two-triplet state and the ground state singlet

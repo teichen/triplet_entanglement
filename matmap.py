@@ -1,41 +1,50 @@
 #!/usr/bin/python
 
-import math
-import numpy
+import numpy as np
 
 def qr_householder(A):
-    """
-    returns V and tau such that H*A = alpha*e1
+    """ Householder transformation
+
+    V and tau such that H*A = alpha*e1
     In this expression, e1 is the first column of eye(m), 
     abs(alpha) = norm(A), and 
     H = eye(m) - tau*V*V' is a Householder matrix.
+
+    Args:
+        A (np.array): 
+
+    Returns: V (np.array) ,
+             tau (np.array) ,
+             alpha (np.array) norm
     """
 
     m = len(A)
     #n = len(A[0])
-    Q = numpy.eye(m) 
+    Q = np.eye(m) 
     R = A.copy() 
 
-    alpha = numpy.linalg.norm(A)
-    alpha = -alpha*numpy.sign(A[0])
+    alpha = np.linalg.norm(A)
+    alpha = -alpha*np.sign(A[0])
 
-#    for j in range(n):
-#        # Find H = I - tau*v*v' to put zeros below R[j,j]
-#        x = R[j:, j]
-#        normx = numpy.linalg.norm(x)
-#        rho = -numpy.sign(x[0])
-#        v1 = x[0] - rho * normx
-#        v = x / v1
-#        v[0] = 1
-#        tau = -rho * v1 / normx
+    """
+    for j in range(n):
+        # Find H = I - tau*v*v' to put zeros below R[j,j]
+        x = R[j:, j]
+        normx = np.linalg.norm(x)
+        rho = -np.sign(x[0])
+        v1 = x[0] - rho * normx
+        v = x / v1
+        v[0] = 1
+        tau = -rho * v1 / normx
 
-#        R[j:, :] = R[j:, :] - tau * numpy.outer(v, v).dot(R[j:, :])
-#        Q[:, j:] = Q[:, j:] - tau * Q[:, j:].dot(numpy.outer(v, v))
+        R[j:, :] = R[j:, :] - tau * np.outer(v, v).dot(R[j:, :])
+        Q[:, j:] = Q[:, j:] - tau * Q[:, j:].dot(np.outer(v, v))
 
-#    return Q, R
+    return Q, R
+    """
 
-    normR = numpy.linalg.norm(R)
-    rho = -numpy.sign(R[0])
+    normR = np.linalg.norm(R)
+    rho = -np.sign(R[0])
     v1 = R[0] - rho * normR
     v = R / v1
     v[0] = 1
@@ -44,18 +53,25 @@ def qr_householder(A):
     return (v, tau, alpha)
 
 def tridiag(A):
+    """
+    skew_tridiagonalize: Compute the tridiagonal form of A under unitary
+    congurence (orthogonal similarity, if A is real)
 
-    #skew_tridiagonalize: Compute the tridiagonal form of A under unitary
-    #congurence (orthogonal similarity, if A is real)
+    tridiag computes a skew-symmetric tridiagonal
+    matrix T and a unitary Q such that A = Q*T*transpose(Q)
 
-    #tridiag computes a skew-symmetric tridiagonal
-    #matrix T and a unitary Q such that A = Q*T*transpose(Q)
+    Args:
+        A (np.array): 
+
+    Returns: T (np.array) ,
+             Q (np.array)
+    """
 
     n = len(A)
 
     T = A
 
-    Q = numpy.identity(n)
+    Q = np.identity(n)
 
     for i in range(0,n-1):
     
@@ -77,15 +93,15 @@ def tridiag(A):
 
         if tau != 0.0:
             #Update the matrix block
-            w = tau*numpy.matmul(T[(i+1):n, (i+1):n],numpy.conjugate(v))
+            w = tau*np.matmul(T[(i+1):n, (i+1):n],np.conjugate(v))
 
-            T[(i+1):n, (i+1):n] = T[(i+1):n, (i+1):n] + numpy.outer(v,w) - numpy.outer(w,v)
+            T[(i+1):n, (i+1):n] = T[(i+1):n, (i+1):n] + np.outer(v,w) - np.outer(w,v)
 
             #Accumulate the individual Householder reflections
             #Accumulate them in the form P_1*P_2*..., which is
             #(..*P_2*P_1)^dagger
-            y = tau*numpy.matmul(Q[:, (i+1):n],v)
-            Q[:, (i+1):n] = Q[:, (i+1):n] - numpy.outer(y,v)
+            y = tau*np.matmul(Q[:, (i+1):n],v)
+            Q[:, (i+1):n] = Q[:, (i+1):n] - np.outer(y,v)
 
     return (T, Q)
 
