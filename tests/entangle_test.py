@@ -10,19 +10,18 @@ class EntanglementTester(unittest.TestCase):
     def test_entanglement(self):
         """
         """
-        n = 101 # size of the lattice
-
+        n  = 101 # size of the lattice
         nr = 20
         dr = 2.0 / (nr-1) # input triplet separation resolution
-        r = np.zeros(nr)
+        r  = np.zeros(nr)
 
         for idx in range(nr):
             r[idx] = idx * dr
 
         ymean = MMax(r, n)
 
-        self.assertAlmostEqual(ymean[0], 0.008163, places=4)
-        self.assertAlmostEqual(ymean[1], 0.002041, places=4)
+        self.assertAlmostEqual(ymean[0],  0.008163, places=4)
+        self.assertAlmostEqual(ymean[2],  0.010204, places=4)
         self.assertAlmostEqual(ymean[-2], 0.226531, places=4)
         self.assertAlmostEqual(ymean[-1], 0.202041, places=4)
 

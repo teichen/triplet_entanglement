@@ -44,11 +44,11 @@ def qr_householder(A):
     """
 
     normR = np.linalg.norm(R)
-    rho = -np.sign(R[0])
-    v1 = R[0] - rho * normR
-    v = R / v1
-    v[0] = 1
-    tau = -rho * v1 / normR
+    rho   = -np.sign(R[0])
+    v1    = R[0] - rho * normR
+    v     = R / v1
+    v[0]  = 1
+    tau   = -rho * v1 / normR
 
     return (v, tau, alpha)
 

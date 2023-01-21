@@ -12,4 +12,4 @@ clean:
 	rm -fr build/
 
 test:
-	cd unit_tests && pytest entangle_test.py
+	cd tests && pytest entangle_test.py

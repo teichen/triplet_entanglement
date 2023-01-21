@@ -2,7 +2,7 @@
 
 from math import cos
 
-def energy_tb(et, jt, thq, n):
+def energy_tb(et, jt, thq):
     """ tight binding energy
 
     Args:

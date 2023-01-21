@@ -20,11 +20,10 @@ def MMax(r, n):
     Returns: ymean (np.array) mean Slater rank for triplet pairs nearly resonant 
              with initial singlet
     """
-    jt = 2.5 # triplet-triplet resonance integral
-    gap = jt # energy gap between two-triplet state and the ground state singlet
-
-    es0 = 0 # the ground state singlet sets the zero
-    et = -0.5 * (gap - es0 - 4 * jt)
+    jt  = 2.5 # triplet-triplet resonance integral
+    gap = jt  # energy gap between two-triplet state and the ground state singlet
+    es0 = 0   # the ground state singlet sets the zero
+    et  = -0.5 * (gap - es0 - 4 * jt)
 
     # calculate a Slater rank, S, for proximal states nearly resonant with singlet
     proximal_points = 10
@@ -37,11 +36,11 @@ def MMax(r, n):
     thq = 2.0 * pi / n * qvec
 
     # calculate entanglement
-    nr = len(r)
+    nr   = len(r)
     slat = np.zeros((nr, proximal_points))
 
     # calculate the tight-binding energy for increasing relative two-triplet momentum
-    e_tb = energy_tb(et, jt, thq, n)
+    e_tb = energy_tb(et, jt, thq)
 
     h_tb = np.eye(len(thq))
     for idq in range(len(thq)):
@@ -49,8 +48,9 @@ def MMax(r, n):
      
     for idx in range(nr):
 
-        chi = jt * r[idx]
-        e_v = energy_v(chi, thq, n)
+        chi = 4 * jt / n * r[idx]
+        
+        e_v = energy_v(chi, thq)
         h_v = np.reshape(e_v, (len(thq), len(thq)))
 
         # calculate the energies and unitary transformation
